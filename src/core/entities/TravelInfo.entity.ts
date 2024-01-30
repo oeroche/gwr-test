@@ -4,6 +4,7 @@ export type TravelInfo = EntityBase & {
   clientInformation: ClientInformation;
   travelDetails: TravelDetails;
   partnerAccountId: string;
+  hash: string;
 };
 
 export type ClientInformation = {

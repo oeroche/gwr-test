@@ -9,7 +9,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { TravelInfo } from '@domain/entities/TravelInfo.entity';
+import { TravelInfo } from '@/core/entities/TravelInfo.entity';
 import isLang from 'validator/lib/isISO6391';
 
 @ValidatorConstraint({ name: 'IsLang', async: true })
@@ -53,7 +53,7 @@ export class TravelInfoDto {
   })
   travelEndDate: Date;
 
-  toTravelInfoEntity(partnerId: string): Omit<TravelInfo, 'id'> {
+  toTravelInfoEntity(partnerId: string): Omit<TravelInfo, 'id' | 'hash'> {
     return {
       clientInformation: {
         email: this.clientEmail,

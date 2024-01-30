@@ -1,4 +1,4 @@
-import { PartnerAccount } from '@/domain/entities/PartnerAccount.entity';
+import { PartnerAccount } from '@/core/entities/PartnerAccount.entity';
 import { BaseRepo } from './base.repo';
 
 export abstract class PartnerAccountRepo extends BaseRepo<

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectPool } from 'nestjs-slonik';
 import { DatabasePool, sql } from 'slonik';
-import { TravelInfo } from '@domain/entities/TravelInfo.entity';
+import { TravelInfo } from '@/core/entities/TravelInfo.entity';
 import {
   TravelInfoFilters,
   TravelInfoRepo,
-} from '@/domain/interfaces/repositories/travelInfo.repo';
+} from '@/core/interfaces/repositories/travelInfo.repo';
 
 import { z } from 'zod';
 
@@ -18,6 +18,7 @@ const TravelInfoRowObject = z.object({
   travelStartDate: z.date(),
   travelEndDate: z.date(),
   partnerAccountId: z.string(),
+  hash: z.string(),
 });
 
 type TravelInfoRow = z.infer<typeof TravelInfoRowObject>;
@@ -43,7 +44,7 @@ export class TravelInfoRepoImplService implements TravelInfoRepo {
         entity.clientInformation.countryOfDestination
       }, ${entity.travelDetails.travelStartDate.toUTCString()}, ${entity.travelDetails.travelEndDate.toUTCString()}, ${
         entity.partnerAccountId
-      }) RETURNING *`,
+      }, ${entity.hash}) RETURNING *`,
     );
     return this._mapRowToEntity(result);
   }
@@ -68,6 +69,7 @@ export class TravelInfoRepoImplService implements TravelInfoRepo {
         travelEndDate: row.travelEndDate,
       },
       partnerAccountId: row.partnerAccountId,
+      hash: row.hash,
     };
   }
 }

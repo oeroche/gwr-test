@@ -1,17 +1,9 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Req,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { LoginDto } from './dtos/auth.in.dtos';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public } from '../auth.guard';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@/domain/entities/User.entity';
 import { GenerateApiKeyOutDto, LoginOutDto } from './dtos/auth.out.dtos';
 
 @Controller('auth')
@@ -55,10 +47,9 @@ export class AuthController {
   async generateApiKey(@Req() req) {
     try {
       // this is a write op if we want cqrs
-      const accountKey = await this._authService.generateApiKey(
-        req.user.userId,
-      );
-      return { accountKey };
+      const { accountKey, signSecret } =
+        await this._authService.generateApiKeyAndSignSecret(req.user.userId);
+      return { accountKey: btoa(accountKey), signSecret };
     } catch (e) {
       throw e;
     }

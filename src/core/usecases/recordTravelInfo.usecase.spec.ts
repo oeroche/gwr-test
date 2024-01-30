@@ -1,5 +1,6 @@
 import { TravelInfo } from '../entities/TravelInfo.entity';
-import { recordTravelInfo } from './recordTravelInfo.usecase';
+import { TravelInfoRepo } from '../interfaces/repositories/travelInfo.repo';
+import { RecordTravelInfoUseCase } from './recordTravelInfo.usecase';
 
 describe('Record Travel Info Use Case', () => {
   const travelInfoInit: Omit<TravelInfo, 'id'> = {
@@ -14,25 +15,27 @@ describe('Record Travel Info Use Case', () => {
       travelEndDate: new Date('2025-12-12'),
       travelStartDate: new Date('2024-12-12'),
     },
+    hash: 'hash',
   };
 
-  let useCase: ReturnType<typeof recordTravelInfo>;
-
+  let useCase: RecordTravelInfoUseCase;
+  let travelInfoRepo: TravelInfoRepo;
   beforeEach(() => {
-    useCase = recordTravelInfo({
-      travelInfoRepo: {
-        create: jest.fn(),
-        delete: jest.fn(),
-        findAll: jest.fn(),
-        findOne: jest.fn(),
-        update: jest.fn(),
-      },
+    travelInfoRepo = {
+      create: jest.fn(),
+      delete: jest.fn(),
+      findAll: jest.fn(),
+      findOne: jest.fn(),
+      update: jest.fn(),
+    };
+    useCase = new RecordTravelInfoUseCase({
+      travelInfoRepo,
     });
   });
 
   it('should throw an error if travel start date is in the past', () => {
     expect(async () => {
-      await useCase({
+      await useCase.execute({
         travelInfo: {
           ...travelInfoInit,
           travelDetails: {
@@ -46,7 +49,7 @@ describe('Record Travel Info Use Case', () => {
 
   it('should throw an error if travel start date is after travel end date', () => {
     expect(async () => {
-      await useCase({
+      await useCase.execute({
         travelInfo: {
           ...travelInfoInit,
           travelDetails: {
@@ -60,7 +63,7 @@ describe('Record Travel Info Use Case', () => {
 
   it('should throw an error if email is empty', () => {
     expect(async () => {
-      await useCase({
+      await useCase.execute({
         travelInfo: {
           ...travelInfoInit,
           clientInformation: {
@@ -74,7 +77,7 @@ describe('Record Travel Info Use Case', () => {
 
   it('should throw an error if country of origin is empty', () => {
     expect(async () => {
-      await useCase({
+      await useCase.execute({
         travelInfo: {
           ...travelInfoInit,
           clientInformation: {
@@ -88,7 +91,7 @@ describe('Record Travel Info Use Case', () => {
 
   it('should throw an error if country of destination is empty', () => {
     expect(async () => {
-      await useCase({
+      await useCase.execute({
         travelInfo: {
           ...travelInfoInit,
           clientInformation: {
@@ -102,7 +105,7 @@ describe('Record Travel Info Use Case', () => {
 
   it('should throw an error if language is empty', () => {
     expect(async () => {
-      await useCase({
+      await useCase.execute({
         travelInfo: {
           ...travelInfoInit,
           clientInformation: {
@@ -115,17 +118,7 @@ describe('Record Travel Info Use Case', () => {
   });
 
   it('should call travelInfoRepo.create with the right parameters', async () => {
-    const travelInfoRepo = {
-      create: jest.fn(),
-      delete: jest.fn(),
-      findAll: jest.fn(),
-      findOne: jest.fn(),
-      update: jest.fn(),
-    };
-    useCase = recordTravelInfo({
-      travelInfoRepo,
-    });
-    await useCase({
+    await useCase.execute({
       travelInfo: travelInfoInit,
     });
     expect(travelInfoRepo.create).toHaveBeenCalledWith(travelInfoInit);

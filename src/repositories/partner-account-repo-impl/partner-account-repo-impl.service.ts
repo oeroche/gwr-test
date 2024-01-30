@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectPool } from 'nestjs-slonik';
 import { DatabasePool, sql } from 'slonik';
-import { PartnerAccount } from '@/domain/entities/PartnerAccount.entity';
-import { PartnerAccountRepo } from '@/domain/interfaces/repositories/PartnerAccountRepo';
+import { PartnerAccount } from '@/core/entities/PartnerAccount.entity';
+import { PartnerAccountRepo } from '@/core/interfaces/repositories/PartnerAccountRepo';
 
 @Injectable()
 export class PartnerAccountRepoImplService implements PartnerAccountRepo {

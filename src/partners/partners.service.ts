@@ -1,19 +1,24 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { TravelInfo } from '@domain/entities/TravelInfo.entity';
-import { recordTravelInfo } from '@domain/usecases/recordTravelInfo.usecase';
+import { TravelInfo } from '@/core/entities/TravelInfo.entity';
+import { RecordTravelInfoUseCase } from '@/core/usecases/recordTravelInfo.usecase';
 import { TravelInfoRepoImplService } from '@/repositories/travel-info-repo-impl/travel-info-repo-impl.service';
 
 @Injectable()
 export class PartnersService {
-  constructor(private readonly _travelInfoRepo: TravelInfoRepoImplService) {}
+  private readonly recordTravelInfoUseCase: RecordTravelInfoUseCase;
+  constructor(private readonly _travelInfoRepo: TravelInfoRepoImplService) {
+    this.recordTravelInfoUseCase = new RecordTravelInfoUseCase({
+      travelInfoRepo: this._travelInfoRepo,
+    });
+  }
 
   async recordTravelInfo(
     travelInfoEntity: Omit<TravelInfo, 'id'>,
   ): Promise<TravelInfo> {
     try {
-      const entity = await recordTravelInfo({
-        travelInfoRepo: this._travelInfoRepo,
-      })({ travelInfo: travelInfoEntity });
+      const entity = await this.recordTravelInfoUseCase.execute({
+        travelInfo: travelInfoEntity,
+      });
       return entity;
     } catch (e) {
       throw new BadRequestException(e.message);

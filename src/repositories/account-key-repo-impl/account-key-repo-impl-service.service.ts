@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectPool } from 'nestjs-slonik';
 import { DatabasePool, sql } from 'slonik';
-import { AccountKey } from '@/domain/entities/AccountKey.entity';
-import { AccountKeyRepo } from '@/domain/interfaces/repositories/accountKey.repo';
+import { AccountKey } from '@/core/entities/AccountKey.entity';
+import { AccountKeyRepo } from '@/core/interfaces/repositories/accountKey.repo';
 import z from 'zod';
 
 const AccountKeyRowObject = z.object({
   id: z.string(),
   encrypted_key: z.string(),
   PartnerAccountId: z.string(),
+  secret_key: z.string(),
   created_at: z.date(),
 });
 
@@ -44,7 +45,7 @@ export class AccountKeyRepoImplService implements AccountKeyRepo {
   }
   async create(entity: AccountKey): Promise<AccountKey> {
     const accountKey = await this._db.one(
-      sql.unsafe`INSERT INTO "AccountKey" VALUES (DEFAULT, DEFAULT, ${entity.encryptedKey}, ${entity.PartnerAccountId}) RETURNING *`,
+      sql.unsafe`INSERT INTO "AccountKey" VALUES (DEFAULT, DEFAULT, ${entity.encryptedKey}, ${entity.PartnerAccountId}, ${entity.signSecret}) RETURNING *`,
     );
     return accountKey as AccountKey;
   }
@@ -60,6 +61,7 @@ export class AccountKeyRepoImplService implements AccountKeyRepo {
       id: row.id,
       encryptedKey: row.encrypted_key,
       PartnerAccountId: row.PartnerAccountId,
+      signSecret: row.secret_key,
     };
   }
 }

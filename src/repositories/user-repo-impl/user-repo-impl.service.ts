@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectPool } from 'nestjs-slonik';
 import { DatabasePool, sql } from 'slonik';
-import { User } from '@/domain/entities/User.entity';
+import { User } from '@/core/entities/User.entity';
 import {
   UserFilters,
   UserRepo,
-} from '@/domain/interfaces/repositories/User.repo';
+} from '@/core/interfaces/repositories/User.repo';
 
 @Injectable()
 export class UserRepoImplService implements UserRepo {

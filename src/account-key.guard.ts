@@ -8,7 +8,7 @@ export class AccountKeyGuard implements CanActivate {
   constructor(private readonly _accountKeyRepo: AccountKeyRepoImplService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
-      const accountKey = this.getAccountKey(context);
+      const accountKey = atob(this.getAccountKey(context));
       const request = context.switchToHttp().getRequest();
       if (!accountKey) {
         return false;

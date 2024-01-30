@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["src/*"],
-      "@domain/*": ["src/domain/*"]
+      "@domain/*": ["src/core/*"]
     }
   }
 }

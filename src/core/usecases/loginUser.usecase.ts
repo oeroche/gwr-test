@@ -2,14 +2,18 @@ import { User } from '../entities/User.entity';
 import { UserRepo } from '../interfaces/repositories/User.repo';
 import { UseCase } from './base.usecase';
 
-export const loginUserUseCase: UseCase<
+export class LoginUserUseCase extends UseCase<
   { userRepo: UserRepo },
-  { email: string; password: string },
-  User
-> =
-  ({ userRepo }) =>
-  async ({ email, password }) => {
-    const user = await userRepo.findOne(email);
+  Promise<User>
+> {
+  async execute({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<User> {
+    const user = await this.deps.userRepo.findOne(email);
     if (!user) {
       throw new Error('User not found');
     }
@@ -17,4 +21,5 @@ export const loginUserUseCase: UseCase<
       throw new Error('Wrong password');
     }
     return user;
-  };
+  }
+}

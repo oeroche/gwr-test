@@ -1,4 +1,4 @@
-import { User } from '@/domain/entities/User.entity';
+import { User } from '@/core/entities/User.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
 
@@ -45,4 +45,10 @@ export class GenerateApiKeyOutDto {
     description: 'API Key',
   })
   accountKey: string;
+
+  @IsString()
+  @ApiProperty({
+    description: 'Sign Secret, used to sign payloads',
+  })
+  signSecret: string;
 }

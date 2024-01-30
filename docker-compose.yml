@@ -9,4 +9,5 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: ody-test
     volumes:
+      - ./sql:/docker-entrypoint-initdb.d
       - ./pg-data:/var/lib/postgresql/data

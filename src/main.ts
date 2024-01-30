@@ -19,6 +19,15 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
+    .addBearerAuth({
+      in: 'header',
+      'x-tokenName': 'Authorization',
+      name: 'Authorization',
+      type: 'apiKey',
+      bearerFormat: 'JWT',
+      description:
+        'Enter the token with the `Bearer ` prefix, e.g. "Bearer abcde12345".',
+    })
     .setTitle('Ody test API')
     .setDescription('The ody test API documentation')
     .setVersion('0.1')

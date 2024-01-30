@@ -3,37 +3,43 @@ import { UserRepo } from '../interfaces/repositories/User.repo';
 import { AccountKeyRepo } from '../interfaces/repositories/accountKey.repo';
 import { UseCase } from './base.usecase';
 
-export const generateAccountKey: UseCase<
+export class GenerateAccountKeyAndSignSecretUseCase extends UseCase<
   {
     accountKeyRepo: AccountKeyRepo;
     partnerAccountRepo: PartnerAccountRepo;
     userRepo: UserRepo;
     generateKey: () => string | Promise<string>;
+    generateSecret: () => string | Promise<string>;
     encryption: (value: string) => Promise<string>;
   },
-  {
+  Promise<{ accountKey: string; signSecret: string }>
+> {
+  async execute({
+    userId,
+  }: {
     userId: string;
-  },
-  string
-> =
-  ({ accountKeyRepo, partnerAccountRepo, userRepo, generateKey, encryption }) =>
-  async ({ userId }) => {
-    const user = await userRepo.findOne(userId);
+  }): Promise<{ accountKey: string; signSecret: string }> {
+    const user = await this.deps.userRepo.findOne(userId);
     if (!user) {
       throw new Error('User not found');
     }
-    const partner = await partnerAccountRepo.findOne(user.partnerAccountId);
+    const partner = await this.deps.partnerAccountRepo.findOne(
+      user.partnerAccountId,
+    );
     if (!partner) {
       throw new Error('Partner not found');
     }
-    const key = await generateKey();
-    const encryptedKey = await encryption(key);
+    const key = await this.deps.generateKey();
+    const signSecret = await this.deps.generateSecret();
+    const encryptedKey = await this.deps.encryption(key);
     if (key === encryptedKey) {
       throw new Error('Key and encrypted key are the same');
     }
-    const { id } = await accountKeyRepo.create({
+    const { id } = await this.deps.accountKeyRepo.create({
       encryptedKey: encryptedKey, // we record the encrypted key, the underlying key will not be recuparable for security reason, the provider must re-issue a new key if lost
       PartnerAccountId: partner.id,
+      signSecret,
     });
-    return `${id}_${key}`;
-  };
+    return { accountKey: `${id}_${key}`, signSecret };
+  }
+}

@@ -1,4 +1,4 @@
-import { AccountKey } from '@/domain/entities/AccountKey.entity';
+import { AccountKey } from '@/core/entities/AccountKey.entity';
 import { BaseRepo } from './base.repo';
 
 export abstract class AccountKeyRepo extends BaseRepo<

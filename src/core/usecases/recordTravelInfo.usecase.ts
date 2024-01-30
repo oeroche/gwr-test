@@ -1,18 +1,13 @@
 import { TravelInfo } from '../entities/TravelInfo.entity';
 import { TravelInfoRepo } from '../interfaces/repositories/travelInfo.repo';
 import { UseCase } from './base.usecase';
-
-export const recordTravelInfo: UseCase<
+export class RecordTravelInfoUseCase extends UseCase<
   {
     travelInfoRepo: TravelInfoRepo;
   },
-  {
-    travelInfo: Omit<TravelInfo, 'id'>;
-  },
   Promise<TravelInfo>
-> =
-  ({ travelInfoRepo }) =>
-  async ({ travelInfo }) => {
+> {
+  async execute({ travelInfo }: { travelInfo: Omit<TravelInfo, 'id'> }) {
     if (travelInfo.travelDetails.travelStartDate < new Date()) {
       throw new Error('Travel start date cannot be in the past');
     }
@@ -40,5 +35,6 @@ export const recordTravelInfo: UseCase<
       throw new Error('Language cannot be empty');
     }
 
-    return travelInfoRepo.create(travelInfo);
-  };
+    return this.deps.travelInfoRepo.create(travelInfo);
+  }
+}
